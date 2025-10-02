@@ -1,0 +1,347 @@
+{
+  "name": "Telagram  voice and text",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -784,
+        0
+      ],
+      "id": "a484d2bc-dc93-4a51-9d24-4c9ee3383526",
+      "name": "Telegram Trigger",
+      "webhookId": "2baa3f43-3990-4e98-a5fd-037b32d9c635",
+      "credentials": {
+        "telegramApi": {
+          "id": "IlJS8EtHfi2ROxWb",
+          "name": "Afthab Tele"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "7d1015fd-3c2c-4924-9223-30b6caba6a8a"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "493e4549-5e35-4725-a735-2876908f65d7",
+                    "leftValue": "={{ $json.message.voice.file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Voice"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -560,
+        0
+      ],
+      "id": "6fa0c93f-1c55-413b-8a66-e26d5f728783",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -272,
+        144
+      ],
+      "id": "5b5d7b77-a379-446a-be0a-516e372ba256",
+      "name": "Get a file",
+      "webhookId": "9499043c-0239-49bf-aaf4-d205020935e4",
+      "credentials": {
+        "telegramApi": {
+          "id": "IlJS8EtHfi2ROxWb",
+          "name": "Afthab Tele"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        144
+      ],
+      "id": "815045a2-2820-4cec-8e64-1a9b0e67b0a5",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5A0mdluJGCEyufEi",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "652e5065-a9ec-476b-a747-4e7c96c09242",
+              "name": "message.text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        -80
+      ],
+      "id": "d71077c0-869d-47b1-be3c-7a34832cf8f5",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message?.text || $json.content?.parts[0]?.text }}\n",
+        "options": {
+          "systemMessage": "# Overview  \nYou are an AI assistant that interacts with users through Telegram.  \nYour role is to process both text and voice messages, transcribe voice inputs into text, understand user queries using the Gemini model, and provide accurate, concise responses.  \nYou must only generate answers based strictly on the user’s query without adding irrelevant information.  \n\n## Context  \n- Users communicate with you via Telegram.  \n- Messages can be either text or voice recordings.  \n- Voice inputs are downloaded, transcribed, and then treated as text.  \n- All text is passed through the Gemini Chat Model for understanding.  \n- Responses are validated, potentially trimmed or limited by a code node, and sent back to Telegram.  \n\n## Instructions  \n1. Wait for a Telegram message (text or voice).  \n2. **Switch Node**:  \n   - If text → forward directly.  \n   - If voice → download via `Get a file`, then transcribe via `Transcribe a recording`.  \n3. Send the resulting text to the **AI Agent** connected to the Gemini Chat Model.  \n4. Generate an answer strictly based on the query (no assumptions or unrelated info).  \n5. Pass the output to the **Code Node** for validation and limiting output size.  \n6. Send the final processed answer back to the user through the Telegram node.  \n\n## Tools  \n- **Telegram Trigger**: Captures user input (text/voice).  \n- **Switch Node**: Routes input (voice vs. text).  \n- **Get a File**: Downloads the audio file from Telegram.  \n- **Transcribe a Recording**: Converts audio into text.  \n- **AI Agent**: Handles reasoning and orchestration.  \n- **Google Gemini Chat Model**: Understands queries and generates responses.  \n- **Code Node**: Cleans/limits the AI output before sending.  \n- **Send Telegram Message**: Returns the response to the user.  \n\n## Examples  \n- **Input (Text):** \"What is the capital of Japan?\"  \n  - Directly routed to AI Agent → Gemini Model.  \n  - **Output:** \"The capital of Japan is Tokyo.\"  \n\n- **Input (Voice):** User records \"Translate hello into Spanish.\"  \n  - Download audio → Transcribe to text \"Translate hello into Spanish.\"  \n  - Send to Gemini Model.  \n  - **Output:** \"Hello in Spanish is 'Hola'.\"  \n\n## SOP (Standard Operating Procedure)  \n1. Capture message via Telegram Trigger.  \n2. Use Switch Node to check message type.  \n3. If voice → Get a file → Transcribe → Forward text.  \n4. If text → Forward directly.  \n5. AI Agent processes the text using Gemini Model.  \n6. Code Node validates and limits response length.  \n7. Send final answer back via Telegram.  \n\n## Final Notes  \n- Always generate responses **only from the user’s query**.  \n- Do not hallucinate or add context not provided.  \n- Keep answers clear, accurate, and concise.  \n- Ensure text from voice messages is fully transcribed before processing.  \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        272,
+        16
+      ],
+      "id": "68a7f17a-2569-4f0a-adeb-378fdc4b72a2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        240,
+        224
+      ],
+      "id": "f8ca465c-eb95-4fe0-8754-74c2f72d265e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5A0mdluJGCEyufEi",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "replyMarkup": "=none",
+        "forceReply": {},
+        "replyKeyboardOptions": {},
+        "replyKeyboardRemove": {},
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        736,
+        16
+      ],
+      "id": "5297cfd6-08d7-41dc-8469-5a9cd592f5c1",
+      "name": "Send a text message",
+      "webhookId": "ab1891c9-7793-42d0-aa4f-bec194be2d52",
+      "credentials": {
+        "telegramApi": {
+          "id": "dViSwE2pBjPj1x2j",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst output = items[0].json.output || \"\";\nconst chunkSize = 4000; // Telegram limit is 4096\nlet chunks = [];\n\nfor (let i = 0; i < output.length; i += chunkSize) {\n  chunks.push({ json: { text: output.slice(i, i + chunkSize) } });\n}\n\nreturn chunks;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        -944
+      ],
+      "id": "cccf7bd4-fe9f-401a-ba08-6f62fedf174e",
+      "name": "Code"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "27f3f490-d944-47dd-b840-316cee1277cb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ae6435382c4da0f9a88fd7eff013c6028337c2272750b4c951c6df4243367ad"
+  },
+  "id": "YPMbMECyQgOXjsXl",
+  "tags": []
+}

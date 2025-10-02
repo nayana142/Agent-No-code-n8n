@@ -1,0 +1,536 @@
+{
+  "name": "Watsapp sheet agent",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {
+          "messageStatusUpdates": [
+            "all"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        -32
+      ],
+      "id": "1e86651a-8267-4f33-a7ec-86eaf27d6a65",
+      "name": "WhatsApp Trigger",
+      "webhookId": "189c5a29-ccd3-4aef-b32b-1891c84cb760",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "x9BUGZweoh69lD5w",
+          "name": "WhatsApp OAuth account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.messages && $json.messages[0] ? $json.messages[0].text.body : '' }}\n\n",
+        "options": {
+          "systemMessage": "=# Overview  \nYou are an AI assistant that interacts with users via WhatsApp to provide **student lead information**. Leads are stored in a Google Sheet, and you must always retrieve and present data directly from the sheet without making assumptions. The assistant should present information in a structured, clear, and professional manner.  \n\n## Context  \n- Users send queries via **WhatsApp Trigger**.  \n- The **Google Gemini Chat Model** interprets queries.  \n- **Google Sheets** is the single source of truth and contains the following fields:  \n  - **Student ID**  \n  - **Name**  \n  - **Source of Enquiry** (possible values: *YouTube, Instagram, SEO, Direct*)  \n  - **Status** (possible values: *Warm, Cold, New*)  \n  - **Number of Follow-ups**  \n- **Simple Memory** is used only to recall which student the user last asked about, never to store or generate data.  \n- Responses are sent back to the user via **WhatsApp Send Message**.  \n\n## Instructions  \n1. Receive WhatsApp message.  \n2. If the message is a **greeting only** (e.g., \"hi\", \"hello\", \"hey\", \"good morning\"), return a polite greeting response like:  \n   - \"Hello! How can I help you today?\"  \n   - Do not query Google Sheets or use memory in this case.  \n3. If the message is a **lead-related query**, parse intent with **Google Gemini Chat Model**.  \n4. Query **Google Sheets** for the requested student record (by ID or Name).  \n5. Return data in structured format:  \n   - Student ID  \n   - Name  \n   - Source of Enquiry  \n   - Status  \n   - Number of Follow-ups  \n \n6. If multiple matches, ask the user to clarify.  \n7. If no match found, politely inform the user.   \n\n## Tools  \n- **Google Gemini Chat Model**: For query understanding and natural response generation.  \n- **Simple Memory**: To recall the last student identifier (name/ID) referenced, but not to store data.  \n- **Google Sheets (Get row(s))**: The only source for lead information.  \n- **WhatsApp Trigger & Send Message**: For communication in/out.  \n\n## Examples  \n \n- **Input:** \"Hi\"  \n  - Response: \"Hello! How can I help you today?\" \n\n- **Input:** \"What’s the status of student ID 105?\"  \n  - Sheets Lookup → Student ID = 105.  \n  - Response:  \n    ```\n    Student ID: 105  \n    Name: Priya Sharma  \n    Source of Enquiry: Instagram  \n    Status: Warm  \n    Follow-ups: 2  \n   \n    ```  \n\n- **Input:** \"Give me the source of enquiry for Raj.\"  \n  - Sheets Lookup → Name = Raj.  \n  - Response:  \n    ```\n    Student ID: 110  \n    Name: Raj Patel  \n    Source of Enquiry: YouTube  \n    Status: New  \n    Follow-ups: 1  \n   \n    ```  \n\n- **Input:** \"Tell me about the student I asked yesterday.\"  \n  - Memory Recall → Last referenced = Student ID 118.  \n  - Sheets Lookup → ID = 118.  \n  - Response: Show structured record.  \n\n- **Input:** \"Show all students with status = Cold.\"  \n  - Query Sheets → Filter status = Cold.  \n  - Response:  \n    ```\n    The following leads are marked as Cold:  \n    - ID: 120 | Name: Neha Gupta | Source: SEO | Follow-ups: 4  \n    - ID: 122 | Name: Arjun Singh | Source: Direct | Follow-ups: 1  \n    ```  \n\n## SOP (Standard Operating Procedure)  \n1. Trigger on WhatsApp message.  \n2. Parse query using **Google Gemini Chat Model**.  \n3. If related to leads:  \n   - Prefer **Student ID** lookup over Name.  \n   - Query **Google Sheets** for data.  \n   - If ambiguous or multiple matches, ask user to clarify.  \n4. Always return structured results in the following order:  \n   - Student ID  \n   - Name  \n   - Source of Enquiry (YouTube, Instagram, SEO, Direct)  \n   - Status (Warm, Cold, New)  \n   - Number of Follow-ups    \n5. Send formatted response back via WhatsApp.  \n6. If no data found → Respond:  \n   - \"No record found for the given student. Please verify the Student ID or Name and try again.\"  \n\n## Final Notes  \n- Do **not hallucinate** data. Only pull information from Google Sheets.  \n- Keep responses **consistent in structure and professional tone**.  \n- Use memory only for recalling identifiers, not data.  \n- If multiple students match, provide a shortlist for the user to choose from.  \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        -32
+      ],
+      "id": "e7260ddf-9a01-4a79-a0b6-e2f27633c7fb",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        112,
+        240
+      ],
+      "id": "a7bd50e3-cd0f-45fd-9b14-03ea5638b650",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5A0mdluJGCEyufEi",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "791101760750302",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {
+          "previewUrl": true
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -32
+      ],
+      "id": "07fb295a-4862-488c-a4a0-8cc4b1a4623f",
+      "name": "Send message1",
+      "webhookId": "a250b9d3-7f2b-4220-a4fe-c1a1332590d2",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "dJkDfcExABKv5h62",
+          "name": "WhatsApp account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $(\"WhatsApp Trigger\").item.json.messages[0].from }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        256
+      ],
+      "id": "30b8964f-b76d-4314-b6bd-9b502bc760ee",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a96851e3-4ba5-42be-a9f0-54eecd029ae6",
+              "leftValue": "={{ $json.messages && $json.messages[0].text && $json.messages[0].text.body }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        -32
+      ],
+      "id": "1e512d56-9bdc-48d4-bbc3-a12ec5e26393",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o",
+          "mode": "list",
+          "cachedResultName": "Source of Enquiry Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1679537883,
+          "mode": "list",
+          "cachedResultName": "Lead data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit#gid=1679537883"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        256
+      ],
+      "id": "6b8d5cd2-bd09-417f-9321-5621c65a4bc8",
+      "name": "Get row(s)",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o",
+          "mode": "list",
+          "cachedResultName": "Source of Enquiry Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1679537883,
+          "mode": "list",
+          "cachedResultName": "Lead data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit#gid=1679537883"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Student id",
+              "displayName": "Student id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name ",
+              "displayName": "Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source of enquiry",
+              "displayName": "Source of enquiry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "No of times follow up",
+              "displayName": "No of times follow up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Processed",
+              "displayName": "Processed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        256
+      ],
+      "id": "0535c69a-77b3-4126-bcf8-fe6d9c8abff4",
+      "name": "Add data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o",
+          "mode": "list",
+          "cachedResultName": "Source of Enquiry Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1679537883,
+          "mode": "list",
+          "cachedResultName": "Lead data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit#gid=1679537883"
+        },
+        "startIndex": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_Row_Number', ``, 'number') }}"
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        800,
+        256
+      ],
+      "id": "db88f212-6a71-4b91-9813-8bffcb1c59fb",
+      "name": "Delete rows",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o",
+          "mode": "list",
+          "cachedResultName": "Source of Enquiry Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1679537883,
+          "mode": "list",
+          "cachedResultName": "Lead data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit#gid=1679537883"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name___using_to_match_', ``, 'string') }}",
+            "Student id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Student_id', ``, 'string') }}",
+            "Source of enquiry": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Source_of_enquiry', ``, 'string') }}",
+            "No of times follow up": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('No_of_times_follow_up', ``, 'string') }}",
+            "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Name "
+          ],
+          "schema": [
+            {
+              "id": "Student id",
+              "displayName": "Student id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name ",
+              "displayName": "Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Source of enquiry",
+              "displayName": "Source of enquiry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "No of times follow up",
+              "displayName": "No of times follow up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Processed",
+              "displayName": "Processed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        960,
+        256
+      ],
+      "id": "9714f427-dba6-46dc-90c5-d3065b0119e3",
+      "name": "Update Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add data": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete rows": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9a41ea41-5952-427a-b0f8-4003963b6d00",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ae6435382c4da0f9a88fd7eff013c6028337c2272750b4c951c6df4243367ad"
+  },
+  "id": "zFWNB15dR09vM8Oo",
+  "tags": []
+}

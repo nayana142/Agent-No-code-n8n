@@ -1,0 +1,233 @@
+{
+  "name": "Introduction to nodes",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c8a0d44a-8bc7-4826-abb7-9fda0465ac24",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "64022ea9-f322-4e30-877b-499f69ee1bef",
+              "name": "Name",
+              "value": "={{ $json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "61c6a344-bc95-40b5-93f8-260c78d6bcee",
+              "name": "marks",
+              "value": "={{ $json.marks }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "56137e3c-813c-49dd-8b42-6fa4d6253885",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "sendTo": "nayanack.galtechschool@gmail.com",
+        "subject": "=Marks of students:",
+        "emailType": "text",
+        "message": "=In the previous test, students who got high marks are :\n{{ $json.Name.map((name, i) => `${name} - ${$json.marks[i]}`).join(\"\\n\") }}\n\nThank you\nDepartment of Data",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "ce0adfa6-783a-4376-b663-1cedb70ff0b2",
+      "name": "Send a message",
+      "webhookId": "1014b158-2a4d-4e5e-b0de-f3b814cdf6b3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gBEOIrCiDMqZDXtf",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "Name"
+            },
+            {
+              "fieldToAggregate": "marks"
+            }
+          ]
+        },
+        "options": {
+          "includeBinaries": false
+        }
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        832,
+        0
+      ],
+      "id": "9a0f1563-b725-4d2e-a388-64b7070590c0",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8ef99241-c2ca-40a4-9207-6745a6ce9f15",
+              "leftValue": "={{ $json.marks.toNumber() }}",
+              "rightValue": 60,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "aec04133-c7e4-4d3c-991b-ac6881eb5864",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Wr5fTtPgPwO8N0J-od6bz52MbzvlySkPhMIfJWASMPs",
+          "mode": "list",
+          "cachedResultName": "student data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Wr5fTtPgPwO8N0J-od6bz52MbzvlySkPhMIfJWASMPs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Wr5fTtPgPwO8N0J-od6bz52MbzvlySkPhMIfJWASMPs/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "d1c0df62-ff8d-41ed-92f8-5cec779e0ba2",
+      "name": "Std data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Std data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Std data": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "53d9e1e5-1421-4739-bd28-abee35946e47",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ae6435382c4da0f9a88fd7eff013c6028337c2272750b4c951c6df4243367ad"
+  },
+  "id": "0FTF1hzP7Tq4iUZz",
+  "tags": []
+}

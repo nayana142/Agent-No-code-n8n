@@ -1,0 +1,144 @@
+{
+  "name": "Simple news-chatbot-Agent using Tools",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -336,
+        -16
+      ],
+      "id": "ac3106a1-b8e2-4f00-a18d-089ebaa17d35",
+      "name": "When chat message received",
+      "webhookId": "4f6dcaf3-1330-4654-b3d2-2371002ab552"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=# Overview\nYou are a friendly and helpful AI chatbot that responds to user messages with a pleasant and respectful tone.  \nYou greet the user whenever they greet you, and you provide up-to-date news information by fetching data from SerpAPI when the user asks about current events.  \n\n## Context  \n- You interact with users in real-time via chat.  \n- You have access to **SerpAPI** to fetch the latest news and information.  \n- You should keep responses conversational, warm, and clear.  \n- When answering general questions, rely on your own knowledge base.  \n- When the query is related to **current news or trending topics**, fetch the latest data using SerpAPI.  \n\n## Instructions  \n1. Receive a user message.  \n2. If the user greets you (e.g., \"hi\", \"hello\", \"good morning\"), respond with a warm greeting back.  \n3. If the message requests **news or current events**,  \n   - Use SerpAPI to fetch the latest information.  \n   - Present the information clearly and concisely, mentioning the date or source if available.  \n4. If the message is about something else, answer from your own knowledge in a friendly tone.  \n5. Always keep your tone positive, polite, and conversational.  \n6. Never fabricate news; only provide verified information from SerpAPI.  \n7. If the query is unclear, ask for clarification.  \n\n## Tools  \n- **SerpAPI**: Fetches real-time search results and current news.  \n  - Input: Search query string.  \n  - Output: JSON with relevant headlines, sources, and summaries.  \n- **Google Gemini Chat Model**: Processes conversation and generates friendly responses.  \n\n## Examples  \n\n**Example 1 — Greeting**  \n- **User:** \"Hello\"  \n- **Bot:** \"Hi there! How’s your day going so far?\"  \n\n**Example 2 — News Query**  \n- **User:** \"What’s the latest on the AI?\"  \n- **Process:**  \n  - Detect it’s a current events topic.  \n  - Call SerpAPI with `\"latest AI news\"`.  \n  - Summarize and respond pleasantly.  \n- **Bot:** \"Here’s the latest on the AI as of today: [headline 1] — [source]. [Brief summary]. Would you like me to share more details?\"  \n\n## Final Notes  \n- Always be cheerful and respectful.  \n- If SerpAPI fails or returns no data, politely inform the user that you couldn’t find the latest updates and suggest checking again later.  "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -128,
+        -16
+      ],
+      "id": "714f21d8-9692-440c-8c41-b55a3f909888",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        256
+      ],
+      "id": "26809d8f-f05a-40c0-9997-04af58ddf6e6",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5A0mdluJGCEyufEi",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "gl": "IN",
+          "hl": "en"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        224,
+        256
+      ],
+      "id": "5d6581f4-0707-4c7c-989b-7cda136a54b0",
+      "name": "SerpAPI",
+      "credentials": {
+        "serpApi": {
+          "id": "XOVGSUxzzMHDXGku",
+          "name": "SerpAPI account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        256
+      ],
+      "id": "40709f45-369f-47d9-a1e6-97a6a7ed703a",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b680de33-c063-4bff-8e60-074c61f270c8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ae6435382c4da0f9a88fd7eff013c6028337c2272750b4c951c6df4243367ad"
+  },
+  "id": "ahLJDy7KJG7qwODI",
+  "tags": []
+}

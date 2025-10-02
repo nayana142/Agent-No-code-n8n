@@ -1,0 +1,1374 @@
+{
+  "name": "Lead classification workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        -64
+      ],
+      "id": "42132c90-dcdc-4975-b44d-0cd94560e3c1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b79e0cff-d5e5-45da-9bcf-6f9da3df4cf1",
+              "leftValue": "={{ $json['Source of enquiry'].toLowerCase() }}",
+              "rightValue": "youtube",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        752,
+        -64
+      ],
+      "id": "bcd55c6b-0126-4fd3-9126-e6deab233c28",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ab684e60-ddc1-4f70-b87b-de898d55d34e",
+              "name": "Name ",
+              "value": "={{ $json['Name '] }}",
+              "type": "string"
+            },
+            {
+              "id": "c9a57fea-e9a3-42ba-87da-24e40e72c9da",
+              "name": "No of times follow up",
+              "value": "={{ $json['No of times follow up'] }}",
+              "type": "number"
+            },
+            {
+              "id": "5ce48100-3f78-4c29-a251-a577153a3c02",
+              "name": "Status",
+              "value": "={{ $json.Status }}",
+              "type": "string"
+            },
+            {
+              "id": "bd8bed68-2ec9-485b-8e1e-7a1e952274e5",
+              "name": "Source of enquiry",
+              "value": "={{ $json['Source of enquiry'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1744,
+        -208
+      ],
+      "id": "ed75d914-52f4-45dc-bd18-04a3a867c11a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ed93e240-8436-40df-9879-1d36693355ba",
+              "leftValue": "={{ $json.Status.toLowerCase() }}",
+              "rightValue": "warm",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2160,
+        -208
+      ],
+      "id": "f49fe79f-3cb9-400d-8137-335883a6639e",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "59aef224-120a-4642-b9db-d82e5039e36a",
+              "leftValue": "={{ $json['Source of enquiry'].toLowerCase() }}",
+              "rightValue": "instagram",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1200,
+        208
+      ],
+      "id": "a80b13b6-1ac0-49d0-b1bb-c31f1792ffc8",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0ebd03e1-aa9e-4e80-a706-72d7de29aea5",
+              "name": "Name ",
+              "value": "={{ $json['Name '] }}",
+              "type": "string"
+            },
+            {
+              "id": "c1e6ecb4-b9ab-43fb-b09c-4a7bc2348a6e",
+              "name": "No of times follow up",
+              "value": "={{ $json['No of times follow up'] }}",
+              "type": "number"
+            },
+            {
+              "id": "c4ab63ab-46a5-4d98-81bd-5f40c26124b3",
+              "name": "Status",
+              "value": "={{ $json.Status }}",
+              "type": "string"
+            },
+            {
+              "id": "db2f5b70-ff5b-43a7-95ec-a5311d92d70c",
+              "name": "Source of enquiry",
+              "value": "={{ $json['Source of enquiry'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1920,
+        16
+      ],
+      "id": "621d58ae-5adf-4666-a9ae-561ab1a8512c",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3ca9b590-0038-455d-be56-4ac74cba46a4",
+              "leftValue": "={{ $json.Status.toLowerCase() }}",
+              "rightValue": "warm",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2288,
+        16
+      ],
+      "id": "a485063e-b2da-48fa-af73-f568acf2601c",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6411ffbb-b7ea-475a-a7ba-996cc7a973c5",
+              "leftValue": "={{ $json['Source of enquiry'].toLowerCase() }}",
+              "rightValue": "direct",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1488,
+        448
+      ],
+      "id": "f9fef877-90d8-4cfd-87f9-334d3c917921",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e76ce89a-b3e7-4d6b-b1b8-0db38ee7f5aa",
+              "name": "Name ",
+              "value": "={{ $json['Name '] }}",
+              "type": "string"
+            },
+            {
+              "id": "94204c4f-b98f-463c-ab47-859216520a3e",
+              "name": "No of times follow up",
+              "value": "={{ $json['No of times follow up'] }}",
+              "type": "number"
+            },
+            {
+              "id": "bc8da834-92aa-4ddf-8ed9-2fc65be115e8",
+              "name": "Status",
+              "value": "={{ $json.Status }}",
+              "type": "string"
+            },
+            {
+              "id": "ed021a62-15f6-4351-a463-e0f417d1f728",
+              "name": "Source of enquiry",
+              "value": "={{ $json['Source of enquiry'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2096,
+        304
+      ],
+      "id": "65df0968-b10b-4ea8-bb8b-b101ef2dc615",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "99875c46-a745-4e5b-ac5f-798bf0e02f92",
+              "leftValue": "={{ $json.Status.toLowerCase() }}",
+              "rightValue": "=warm",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2368,
+        304
+      ],
+      "id": "dfc5d3d7-66f8-40f6-915f-73304e4f9df6",
+      "name": "Filter2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0f3a0eae-a7ab-4e05-9ebe-18b9400c1508",
+              "name": "Name ",
+              "value": "={{ $json['Name '] }}",
+              "type": "string"
+            },
+            {
+              "id": "954628b3-f64f-48e0-8a05-16c57bc031d1",
+              "name": "No of times follow up",
+              "value": "={{ $json['No of times follow up'] }}",
+              "type": "number"
+            },
+            {
+              "id": "cf5094bf-7107-4649-a1cf-9ba0d308465d",
+              "name": "Status",
+              "value": "={{ $json.Status }}",
+              "type": "string"
+            },
+            {
+              "id": "1dc99930-93af-494e-b87c-c33969fb8784",
+              "name": "Source of enquiry",
+              "value": "={{ $json['Source of enquiry'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2112,
+        608
+      ],
+      "id": "a391e0dc-76f0-4a8c-a9f1-3ebe08360ecf",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fcebfe0b-0f60-410a-b979-288d67608b78",
+              "leftValue": "={{ $json.Status.toLowerCase() }}",
+              "rightValue": "warm",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2400,
+        608
+      ],
+      "id": "140eb609-49cf-4cb6-968c-d2a797c4be54",
+      "name": "Filter3"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o",
+          "mode": "list",
+          "cachedResultName": "Source of Enquiry Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Youtube",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Student id",
+              "displayName": "Student id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name ",
+              "displayName": "Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Source of enquiry",
+              "displayName": "Source of enquiry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "No of times follow up",
+              "displayName": "No of times follow up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Processed",
+              "displayName": "Processed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1200,
+        -208
+      ],
+      "id": "27e0ead5-10ae-4526-9514-5a24d5c2eca4",
+      "name": "leads from youtube",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o",
+          "mode": "list",
+          "cachedResultName": "Source of Enquiry Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 448018999,
+          "mode": "list",
+          "cachedResultName": "Youtube-warm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit#gid=448018999"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2672,
+        -208
+      ],
+      "id": "eccdfcf9-672c-4618-829c-9f6629caa1e6",
+      "name": "Converted leads from youtube",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o",
+          "mode": "list",
+          "cachedResultName": "Source of Enquiry Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 492838022,
+          "mode": "list",
+          "cachedResultName": "Instagram",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit#gid=492838022"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1536,
+        16
+      ],
+      "id": "e4b91b95-c1d8-4a9e-8b05-78cc08d73386",
+      "name": "leads from instagram",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o",
+          "mode": "list",
+          "cachedResultName": "Source of Enquiry Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1426264442,
+          "mode": "list",
+          "cachedResultName": "Instagram -warm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit#gid=1426264442"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2688,
+        16
+      ],
+      "id": "89b4b9d7-1570-4ed7-89b8-a027fa90f2df",
+      "name": "converted leads from instagram",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o",
+          "mode": "list",
+          "cachedResultName": "Source of Enquiry Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 335869436,
+          "mode": "list",
+          "cachedResultName": "Direct",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit#gid=335869436"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1840,
+        304
+      ],
+      "id": "5feaaa31-ca8a-4d17-a760-7c60aa779328",
+      "name": "Leads from direct",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o",
+          "mode": "list",
+          "cachedResultName": "Source of Enquiry Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 900331789,
+          "mode": "list",
+          "cachedResultName": "Direct warm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit#gid=900331789"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2704,
+        304
+      ],
+      "id": "df80de2f-2c3d-4845-864a-ec59f6d82216",
+      "name": "converted leads from direct",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o",
+          "mode": "list",
+          "cachedResultName": "Source of Enquiry Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 477374851,
+          "mode": "list",
+          "cachedResultName": "Seo",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit#gid=477374851"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1856,
+        608
+      ],
+      "id": "01bdcb79-8152-472f-b3a0-adf91f124817",
+      "name": "leads from SEO",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o",
+          "mode": "list",
+          "cachedResultName": "Source of Enquiry Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 507174133,
+          "mode": "list",
+          "cachedResultName": "Seo warm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit#gid=507174133"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2736,
+        608
+      ],
+      "id": "bc6f96e9-c4a9-4d98-9c33-6b4207b8d587",
+      "name": "converted leads from seo",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "nayanack.galtechschool@gmail.com",
+        "subject": "Daily Converted Leads Report",
+        "emailType": "text",
+        "message": "=📊 Daily Converted Leads Report\n\n📌 Instagram Leads:\n{{ $json[\"Name \"].map((name, idx) => $json[\"Source of enquiry\"][idx] === \"Instagram\" ? name + \" - \" + $json[\"No of times follow up\"][idx] : null).filter(x => x).join(\"\\n\") || \"No leads today\" }}\n\n📌 YouTube Leads:\n{{ $json[\"Name \"].map((name, idx) => $json[\"Source of enquiry\"][idx] === \"Youtube\" ? name + \" - \" + $json[\"No of times follow up\"][idx] : null).filter(x => x).join(\"\\n\") || \"No leads today\" }}\n\n\n📌 Direct Leads:\n{{ $json[\"Name \"].map((name, idx) => $json[\"Source of enquiry\"][idx] === \"Direct\" ? name + \" - \" + $json[\"No of times follow up\"][idx] : null).filter(x => x).join(\"\\n\") || \"No leads today\" }}\n\n📌 SEO Leads:\n\n{{ $json[\"Name \"].map((name, idx) => $json[\"Source of enquiry\"][idx] === \"Seo\" ? name + \" - \" + $json[\"No of times follow up\"][idx] : null).filter(x => x).join(\"\\n\") || \"No leads today\" }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3952,
+        112
+      ],
+      "id": "c60dc120-d41e-4d0f-969f-4b7230cde52a",
+      "name": "Send a message",
+      "webhookId": "cf3f353c-cc2d-4bc4-b999-43c87e3de680",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gBEOIrCiDMqZDXtf",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3232,
+        80
+      ],
+      "id": "3bcce745-404a-47cd-9ccd-ae0e1316ad53",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o",
+          "mode": "list",
+          "cachedResultName": "Source of Enquiry Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1679537883,
+          "mode": "list",
+          "cachedResultName": "Lead data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit#gid=1679537883"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -160,
+        -64
+      ],
+      "id": "80858cb6-7fba-4690-ba03-7bc522eca645",
+      "name": "Leads data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o",
+          "mode": "list",
+          "cachedResultName": "Source of Enquiry Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1679537883,
+          "mode": "list",
+          "cachedResultName": "Lead data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wTSOot5tEBfV8_t5uVTbazzL6FvkyXonwcIABAHy71o/edit#gid=1679537883"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Student id": "={{ $json['Student id'] }}",
+            "Name ": "={{ $json['Name '] }}",
+            "Source of enquiry": "={{ $json['Source of enquiry'] }}",
+            "No of times follow up": "={{ $json['No of times follow up'] }}",
+            "Status": "={{ $json.Status }}",
+            "Processed": "Yes"
+          },
+          "matchingColumns": [
+            "Student id"
+          ],
+          "schema": [
+            {
+              "id": "Student id",
+              "displayName": "Student id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name ",
+              "displayName": "Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source of enquiry",
+              "displayName": "Source of enquiry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "No of times follow up",
+              "displayName": "No of times follow up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Processed",
+              "displayName": "Processed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        -64
+      ],
+      "id": "ea79cc4c-fd5d-42a5-968f-3c61b496dd90",
+      "name": "Processed row / Not",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e875bb05-fed6-460d-9096-b4ac3bea9d2f",
+              "leftValue": "={{ $json.Processed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        -64
+      ],
+      "id": "2a4c57d1-7172-422d-be8d-78452bd52c0c",
+      "name": "Filter New Data"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "Name "
+            },
+            {
+              "fieldToAggregate": "No of times follow up"
+            },
+            {
+              "fieldToAggregate": "Source of enquiry"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        3600,
+        112
+      ],
+      "id": "040a6e6f-70a8-45fc-8c31-c26ee0609326",
+      "name": "Aggregate"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Leads data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "leads from youtube",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Converted leads from youtube",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "leads from instagram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "converted leads from instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Leads from direct",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "leads from SEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Filter2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter2": {
+      "main": [
+        [
+          {
+            "node": "converted leads from direct",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Filter3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter3": {
+      "main": [
+        [
+          {
+            "node": "converted leads from seo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "leads from youtube": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "leads from instagram": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leads from direct": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "leads from SEO": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Converted leads from youtube": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "converted leads from instagram": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "converted leads from direct": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "converted leads from seo": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leads data": {
+      "main": [
+        [
+          {
+            "node": "Filter New Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processed row / Not": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter New Data": {
+      "main": [
+        [
+          {
+            "node": "Processed row / Not",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "18593c11-3a5e-4e28-9aec-c6de0f457f0d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ae6435382c4da0f9a88fd7eff013c6028337c2272750b4c951c6df4243367ad"
+  },
+  "id": "JNAM5b8U0JeMXSF2",
+  "tags": []
+}

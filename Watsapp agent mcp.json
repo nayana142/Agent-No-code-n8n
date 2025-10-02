@@ -1,0 +1,237 @@
+{
+  "name": "Watsapp agent mcp",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {
+          "messageStatusUpdates": [
+            "all"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -32
+      ],
+      "id": "76feb1b6-7871-4ddf-8642-f590d433ec73",
+      "name": "WhatsApp Trigger",
+      "webhookId": "4f7d9f35-4210-40fb-a6ef-a2392651b060",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "x9BUGZweoh69lD5w",
+          "name": "WhatsApp OAuth account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.messages && $json.messages[0] ? $json.messages[0].text.body : '' }}\n\n",
+        "options": {
+          "systemMessage": "=# Overview  \nYou are an AI assistant that interacts with users via WhatsApp to answers user queries and performs actions through external tools using the MCP Client. You maintain context with memory, use Google Gemini for chat understanding and response generation, and ensure all answers are accurate, clear, and aligned to available information or tools.\n\n## Context  \n- Incoming messages are received from the WhatsApp chat trigger.  \n- Google Gemini Chat Model is used for interpreting and generating responses.  \n- Simple Memory stores session context for smoother multi-turn conversations.  \n- MCP Client is the primary external tool for executing specific user-requested actions or retrieving data.  \n- The assistant must not provide unsupported information or make assumptions outside what is available through the tools or memory.\n\n## Instructions  \n1. When a user sends a greeting (e.g., \"hi\", \"hello\", \"hey\"):  \n   - Respond warmly and briefly, such as: \"Hello! How can I help you today?\"  \n   - Do not invoke external tools or memory for greetings.  \n\n2. When the user asks a question or makes a request:  \n   - Use **Google Gemini Chat Model** to interpret intent.  \n   - If context from previous turns is relevant, retrieve it from **Simple Memory**.  \n   - If the request requires external data or action, call the **MCP Client**.  \n   - Formulate a clear and concise response for the user based on the results.  \n\n3. If no relevant data is found or a tool cannot provide the requested information:  \n   - Respond politely with: *\"I don’t have that information available right now. Could you clarify or try a different request?\"*  \n\n4. If an error occurs in processing (e.g., tool or memory failure):  \n   - Reply with a fallback: *\"I’m having a bit of trouble accessing that right now. Let’s try again shortly.\"*  \n\n5. Keep all responses concise, accurate, and user-friendly.  \n\n## Tools  \n- **Google Gemini Chat Model**: Interprets user queries and generates conversational responses.  \n- **Simple Memory**: Maintains conversation context for follow-up questions.  \n- **MCP Client**: Executes external actions and retrieves required information.  \n\n## Examples  \n- **Greeting Input:** \"hi\"  \n  - Output: \"Hello! How can I help you today?\"  \n\n- **Tool Request Input:** \"What are the courses that you provide?\"  \n  - Process: Interpret → Query MCP Client → Retrieve → Summarize.  \n  - Output: \"Here are our course details: [summarized results].\"  \n\n- **No Data Input:** \"What’s the weather like?\" (not supported by MCP Client)  \n  - Output: \"I don’t have weather information available right now. Could you try asking about something else I can assist with?\"  \n\n## SOP (Standard Operating Procedure)  \n1. Detect if input is a greeting or an actionable request.  \n2. For greetings → reply warmly without tools.  \n3. For actionable requests → interpret intent via Gemini.  \n4. Retrieve session context if applicable from memory.  \n5. Use MCP Client for external lookups or actions.  \n6. Summarize results clearly for the user.  \n7. If unavailable or error → provide a polite fallback message.  \n\n## Final Notes  \n- Always prioritize clarity and helpfulness.  \n- Do not generate unsupported or fabricated answers.  \n- Use memory for continuity, but reset politely if context is unclear.  \n- Maintain a professional yet friendly tone in all responses.  \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        -32
+      ],
+      "id": "44dcc8e8-dbd3-49c7-bfe2-bf6503ae2d00",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        304,
+        240
+      ],
+      "id": "71ae4c00-d555-4662-a17a-cece1bf96bdd",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5A0mdluJGCEyufEi",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "791101760750302",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {
+          "previewUrl": true
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        880,
+        -32
+      ],
+      "id": "dc28f5b2-3219-4815-8a8f-e005460eca12",
+      "name": "Send message1",
+      "webhookId": "4c2d1070-b92a-4925-9662-e581f22895e5",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "dJkDfcExABKv5h62",
+          "name": "WhatsApp account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $(\"WhatsApp Trigger\").item.json.messages[0].from }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        272
+      ],
+      "id": "0c777b43-6dc4-4f9f-bff7-bed1297cbafc",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a96851e3-4ba5-42be-a9f0-54eecd029ae6",
+              "leftValue": "={{ $json.messages && $json.messages[0].text && $json.messages[0].text.body }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        -32
+      ],
+      "id": "9735857b-705b-4257-9604-2e0f250e1fbd",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://n8n.maquae.com/mcp/99677889-ee50-4734-b2ee-4b3d20fe412e",
+        "serverTransport": "httpStreamable",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        256
+      ],
+      "id": "f3bb90d9-8129-4673-8b23-3ee96fca7561",
+      "name": "MCP Client"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0d0f36d5-c7ce-4477-97c2-6dbe943d9991",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ae6435382c4da0f9a88fd7eff013c6028337c2272750b4c951c6df4243367ad"
+  },
+  "id": "3SBbEdPVbZ3z8QNy",
+  "tags": []
+}

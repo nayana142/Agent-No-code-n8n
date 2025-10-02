@@ -1,0 +1,110 @@
+{
+  "name": "Weather fetching workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "cityName": "kochi"
+      },
+      "type": "n8n-nodes-base.openWeatherMap",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -80
+      ],
+      "id": "148ebcd3-f39c-40ae-af97-c81e1fd9e16b",
+      "name": "OpenWeatherMap",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "zpZEd5VjPVsAHkRT",
+          "name": "OpenWeatherMap account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "cknayana86@gmail.com",
+        "subject": "Today weather :",
+        "emailType": "text",
+        "message": "=Hello,\nHope You are fine!\nHere is today's weather report:\nTemperature: {{ $json.main.temp }}°C\nFeels like: {{ $json.main.feels_like }}°C\nCondition: {{ $json.weather[0].description }}\nVisibility: {{ $json.visibility }}\nClouds: {{ $json.clouds.all }}%\nStay safe!\n\n\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        -80
+      ],
+      "id": "f0a302ef-2a37-49b3-bd83-d50a55595264",
+      "name": "Send a message",
+      "webhookId": "ebf51c76-45a3-4e8f-8075-546ae699760b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gBEOIrCiDMqZDXtf",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -368,
+        -80
+      ],
+      "id": "a02fdc8d-5b1e-4752-b101-b43f1334f3be",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenWeatherMap": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "OpenWeatherMap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c848b7ae-555c-4e0a-be4c-2b803942d026",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ae6435382c4da0f9a88fd7eff013c6028337c2272750b4c951c6df4243367ad"
+  },
+  "id": "Ynl1RSJco002dv1x",
+  "tags": []
+}

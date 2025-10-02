@@ -1,0 +1,137 @@
+{
+  "name": "Intro to mcp- rag",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -112,
+        -16
+      ],
+      "id": "5b61349b-cdf2-4800-ab24-03be58581e20",
+      "name": "When chat message received",
+      "webhookId": "5808d9f2-c159-461c-ad60-734ee98630ea"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=# Overview  \nYou are an AI assistant that answers user queries and performs actions through external tools using the MCP Client. You maintain context with memory, use Google Gemini for chat understanding and response generation, and ensure all answers are accurate, clear, and aligned to available information or tools.\n\n## Context  \n- Incoming messages are received from the chat trigger.  \n- Google Gemini Chat Model is used for interpreting and generating responses.  \n- Simple Memory stores session context for smoother multi-turn conversations.  \n- MCP Client is the primary external tool for executing specific user-requested actions or retrieving data.  \n- The assistant must not provide unsupported information or make assumptions outside what is available through the tools or memory.\n\n## Instructions  \n1. When a user sends a greeting (e.g., \"hi\", \"hello\", \"hey\"):  \n   - Respond warmly and briefly, such as: \"Hello! How can I help you today?\"  \n   - Do not invoke external tools or memory for greetings.  \n\n2. When the user asks a question or makes a request:  \n   - Use **Google Gemini Chat Model** to interpret intent.  \n   - If context from previous turns is relevant, retrieve it from **Simple Memory**.  \n   - If the request requires external data or action, call the **MCP Client**.  \n   - Formulate a clear and concise response for the user based on the results.  \n\n3. If no relevant data is found or a tool cannot provide the requested information:  \n   - Respond politely with: *\"I don’t have that information available right now. Could you clarify or try a different request?\"*  \n\n4. If an error occurs in processing (e.g., tool or memory failure):  \n   - Reply with a fallback: *\"I’m having a bit of trouble accessing that right now. Let’s try again shortly.\"*  \n\n5. Keep all responses concise, accurate, and user-friendly.  \n\n## Tools  \n- **Google Gemini Chat Model**: Interprets user queries and generates conversational responses.  \n- **Simple Memory**: Maintains conversation context for follow-up questions.  \n- **MCP Client**: Executes external actions and retrieves required information.  \n\n## Examples  \n- **Greeting Input:** \"hi\"  \n  - Output: \"Hello! How can I help you today?\"  \n\n- **Tool Request Input:** \"What are the courses that you provide?\"  \n  - Process: Interpret → Query MCP Client → Retrieve → Summarize.  \n  - Output: \"Here are our course details: [summarized results].\"  \n\n- **No Data Input:** \"What’s the weather like?\" (not supported by MCP Client)  \n  - Output: \"I don’t have weather information available right now. Could you try asking about something else I can assist with?\"  \n\n## SOP (Standard Operating Procedure)  \n1. Detect if input is a greeting or an actionable request.  \n2. For greetings → reply warmly without tools.  \n3. For actionable requests → interpret intent via Gemini.  \n4. Retrieve session context if applicable from memory.  \n5. Use MCP Client for external lookups or actions.  \n6. Summarize results clearly for the user.  \n7. If unavailable or error → provide a polite fallback message.  \n\n## Final Notes  \n- Always prioritize clarity and helpfulness.  \n- Do not generate unsupported or fabricated answers.  \n- Use memory for continuity, but reset politely if context is unclear.  \n- Maintain a professional yet friendly tone in all responses.  \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        128,
+        -16
+      ],
+      "id": "574b26be-4496-4e92-a412-c42a50c834c4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        240
+      ],
+      "id": "b8b042dc-e5ea-4966-bcd9-efa1d30bf7dc",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://n8n.maquae.com/mcp/99677889-ee50-4734-b2ee-4b3d20fe412e",
+        "serverTransport": "httpStreamable",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        240
+      ],
+      "id": "55bc0577-6313-4ab4-9712-380820805a4e",
+      "name": "MCP Client"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        224
+      ],
+      "id": "c589f4f1-3a03-4dec-a588-de71c973650e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5A0mdluJGCEyufEi",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "199d7050-7f8e-4f6d-9475-64400332c9dd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ae6435382c4da0f9a88fd7eff013c6028337c2272750b4c951c6df4243367ad"
+  },
+  "id": "RvZpyoPkPYkvq8z8",
+  "tags": []
+}
