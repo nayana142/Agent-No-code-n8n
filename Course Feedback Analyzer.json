@@ -1,0 +1,360 @@
+{
+  "name": "Course Feedback Analyzer",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1NOP-tGq0Pyy1wki2KdtVLTikXfAe_jqf2k5GJYKWPX8",
+          "mode": "list",
+          "cachedResultName": "Course Feedbacks",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NOP-tGq0Pyy1wki2KdtVLTikXfAe_jqf2k5GJYKWPX8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Feedbacks",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NOP-tGq0Pyy1wki2KdtVLTikXfAe_jqf2k5GJYKWPX8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -592,
+        -144
+      ],
+      "id": "b706dc86-47d2-49a1-b62b-03419bd45c11",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "zeb8VVlawZOj5Vbo",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.Feedback }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.sentimentAnalysis",
+      "typeVersion": 1.1,
+      "position": [
+        -400,
+        -160
+      ],
+      "id": "fca1f4ce-cb1d-4d0d-9797-dda63a3e9d65",
+      "name": "Sentiment Analysis"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        80
+      ],
+      "id": "e5bcce9b-b285-419a-8fea-caad69d2d2b1",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ZwZ5BoOq5BbI5r75",
+          "name": "Google Gemini(PaLM) Api account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an AI feedback analysis assistant.\nAnalyze the given course feedback and return output in strict JSON format only with these four keys:\n- \"id\"\n- \"sentiment\"\n- \"feedback\"\n- \"suggestion\"\n\nExample format:\n{\n  \"id\": \"1\",\n  \"sentiment\": \"Negative\",\n  \"feedback\": \"The course was informative but too fast in the last few weeks\",\n  \"suggestion\": \"Adjust the pace in later weeks\"\n}\n\nInput:\nID: {{ $json[\"ID\"] }}\nFeedback: {{ $json[\"Feedback\"] }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -144
+      ],
+      "id": "4ec050c8-5cac-402c-a5a7-d863cc252fac",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ZwZ5BoOq5BbI5r75",
+          "name": "Google Gemini(PaLM) Api account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.content.parts[0].text }}",
+        "options": {
+          "systemMessage": "You are a helpful assistant\nanalyse the input text and separate them in to id, feedback, sentiment and suggestions."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        272,
+        -144
+      ],
+      "id": "fa0f210c-9308-4289-91d7-633bf4ea44e4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        192,
+        48
+      ],
+      "id": "0132d851-789c-4f5e-bf09-6b87fec7121b",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ZwZ5BoOq5BbI5r75",
+          "name": "Google Gemini(PaLM) Api account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1NOP-tGq0Pyy1wki2KdtVLTikXfAe_jqf2k5GJYKWPX8",
+          "mode": "list",
+          "cachedResultName": "Course Feedbacks",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NOP-tGq0Pyy1wki2KdtVLTikXfAe_jqf2k5GJYKWPX8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1192983966,
+          "mode": "list",
+          "cachedResultName": "Suggestions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NOP-tGq0Pyy1wki2KdtVLTikXfAe_jqf2k5GJYKWPX8/edit#gid=1192983966"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ID', ``, 'string') }}",
+            "Feedback": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Feedback', ``, 'string') }}",
+            "Sentiment": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Sentiment', ``, 'string') }}",
+            "Suggestions": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Suggestions', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sentiment",
+              "displayName": "Sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Suggestions",
+              "displayName": "Suggestions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        544,
+        48
+      ],
+      "id": "b7ec4490-d0c6-45d3-9a82-8c4eac078ccb",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pUgkqjvh8F215u5v",
+          "name": "Google Sheets account 20"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "=feedback_analysis",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        48
+      ],
+      "id": "082d165e-be83-4f64-9693-b22d31ecceb6",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Sentiment Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Sentiment Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sentiment Analysis": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "11f58b7b-a261-4fad-a65d-e7c4184ebc2c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ae6435382c4da0f9a88fd7eff013c6028337c2272750b4c951c6df4243367ad"
+  },
+  "id": "XiofN7MsMEs9w9Oa",
+  "tags": []
+}

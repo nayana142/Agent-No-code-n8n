@@ -1,0 +1,577 @@
+{
+  "name": "RS Post Creator",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "05f7132e-02ed-4f79-bd7a-9cbedda383f8",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1UTYTXqH4STLo8OuKEKUo04hDxA3zCvyXP0GQyUWVWfg",
+          "mode": "list",
+          "cachedResultName": "Banner-Idea sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UTYTXqH4STLo8OuKEKUo04hDxA3zCvyXP0GQyUWVWfg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UTYTXqH4STLo8OuKEKUo04hDxA3zCvyXP0GQyUWVWfg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Idea": "={{ $json.idea }}",
+            "PostDetails": "={{ $json.postDetails }}"
+          },
+          "matchingColumns": [
+            "Creative-Idea"
+          ],
+          "schema": [
+            {
+              "id": "Idea",
+              "displayName": "Idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PostDetails",
+              "displayName": "PostDetails",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1488,
+        0
+      ],
+      "id": "04bdd933-bfd5-4ba2-8a3e-8881dac8feea",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2256,
+        480
+      ],
+      "id": "3d6753b0-9818-408a-816b-ef23df41e846",
+      "name": "Wait",
+      "webhookId": "1f606eff-d89c-4d2a-bdd5-ad84017ef1a9"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5794bd56-63dd-4533-acfc-b2cb5e83fad0",
+              "leftValue": "={{ $('OpenAI1').item.json.fileName }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2544,
+        512
+      ],
+      "id": "10744f56-7769-4f2b-a7a6-ab50f2cf5e5c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "model": "gpt-image-1",
+        "prompt": "=Create a luxurious 9:16 banner with ALL text and logos centered and surrounded by at least 15% empty margin from each edge. Do NOT put any text or logo near the edges or corners; use a safe zone in the middle.\n\n {{ $('Code1').item.json.idea }}\n\n",
+        "options": {
+          "size": "1024x1536"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1088,
+        560
+      ],
+      "id": "03140ea8-336b-4f9e-98d9-22c4b6bbe547",
+      "name": "OpenAI1"
+    },
+    {
+      "parameters": {
+        "url": "https://royalshahnaz.com/wp-content/uploads/2025/01/Royal-Shahnaz-1-e1736441818291.png",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data2"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2112,
+        0
+      ],
+      "id": "04857350-95ef-410d-91d4-eb8494821b81",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "18MHoJnzIczHmxQA15hzJ7HLPHri-AJtV8LA8gyUybN8",
+          "mode": "list",
+          "cachedResultName": "RS-Services",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18MHoJnzIczHmxQA15hzJ7HLPHri-AJtV8LA8gyUybN8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18MHoJnzIczHmxQA15hzJ7HLPHri-AJtV8LA8gyUybN8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        208,
+        0
+      ],
+      "id": "04976322-1304-4d8e-b886-9473722702e0",
+      "name": "Google Sheets2",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XHbg3YuiiIiwh8JA",
+          "name": "Nayana_galtech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bd00d763-9102-49a8-85e2-edf882e75dcb",
+              "name": "Category",
+              "value": "={{ $json.Category }}",
+              "type": "string"
+            },
+            {
+              "id": "1355dee5-600b-4306-8b31-70a2e08c8a15",
+              "name": "Services",
+              "value": "={{ $json['Service Name'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        0
+      ],
+      "id": "b9a7e989-eb11-48b9-a385-d04b9dfcd5da",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all rows from input\nconst items = $input.all();\n\n// Select one random item\nconst randomIndex = Math.floor(Math.random() * items.length);\nreturn [items[randomIndex]];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "e703e6f4-26d7-466f-b533-7a7f3e1d3d4b",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  // Safely get text from possible fields and ensure it's a string\n  let text = item.json.prompt || item.json.content || (item.json.message && item.json.message.content) || \"\";\n\n  // Handle if text is an object or array (convert to string)\n  if (typeof text !== \"string\") {\n    text = JSON.stringify(text);\n  }\n\n  // Find delimiter positions\n  const ideaStart = text.indexOf(\"//Creative-Idea//\");\n  const postStart = text.indexOf(\"//Post-Details//\");\n\n  let idea = \"\";\n  let postDetails = \"\";\n\n  // Extract text between delimiters if both are found\n  if (ideaStart !== -1 && postStart !== -1 && postStart > ideaStart) {\n    idea = text.substring(ideaStart + \"//Creative-Idea//\".length, postStart).trim();\n    postDetails = text.substring(postStart + \"//Post-Details//\".length).trim();\n  }\n\n  // Clean up any leading slashes or whitespace\n  idea = idea.replace(/^\\/+/, '').trim();\n  postDetails = postDetails.replace(/^\\/+/, '').trim();\n\n  // Set outputs\n  item.json.idea = idea;\n  item.json.postDetails = postDetails;\n\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1296,
+        0
+      ],
+      "id": "c1a07d05-5d9d-40e5-a579-d4ad03230691",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "name": "=banner-{{$now}}.jpg",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1PSoWZOVDi9ijJBSXuA9TSXDjr3wmf2C9",
+          "mode": "list",
+          "cachedResultName": "Royal Shahanaz- Beauty",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1PSoWZOVDi9ijJBSXuA9TSXDjr3wmf2C9"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2352,
+        0
+      ],
+      "id": "e0b12676-8a08-4eb1-9597-b299abe0c922",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "U68J2UxaoVJrVuei",
+          "name": "Google Drive -nayana"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Create a luxurious social media banner image genration prompt for our services:\n\nHere is category name: \"{{ $json.Category }}\"\n\nhere is the service name: {{ $json.Services }}\n\nAdd related images.\n\nAdd phone 055 526 6703 in modern, readable font at the bottom, using brand colors (gold and magenta), rounded corners, and minimal luxury style. Always maintain text margins and avoid placing any text near the edges.\n\nAlso create Social Media Post details with hashtags.\n\nResult should be in the format:\n\n//Creative-Idea//\nCreative idea details\n\n//Post-Details//\nPost details\n\n\n"
+            },
+            {
+              "content": "=You are a senior Social Media Manager with designer eye who can create detailed prompts.",
+              "role": "system"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        720,
+        496
+      ],
+      "id": "cb2b20d4-587d-40ee-be4e-e47698a94fb5",
+      "name": "Message a model"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Create a luxurious social media banner image genration prompt for our services: \nHere is category name: \"{{ $json.Category }}\" \nhere is the service name: {{ $json.Services }} \n\nAdd related images. Add phone 055 526 6703 in modern, readable font at the bottom, using brand colors (gold and magenta) the banner should embody **pink highlights**, **feminine aesthetics**, and **soft beauty visuals** (e.g., makeup brushes, hair styling, or nails depending on the service).  \nIncorporate **brand colors (gold and magenta)** with a **minimal luxury style**, **rounded corners**, and a refined modern look.  \n\nInclude related images that visually represent the service.  Always maintain text margins and avoid placing any text near the edges. \n\nAlso create Social Media Post details with hashtags. \n\nResult should be in the format: \n//Creative-Idea// \nCreative idea details \n\n//Post-Details// \nPost details\n"
+            },
+            {
+              "content": "You are a senior Social Media Manager with designer eye who can create detailed prompts."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        960,
+        0
+      ],
+      "id": "54dce520-34e6-446d-8da8-a040b69f04c0",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5A0mdluJGCEyufEi",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash-preview-image-generation",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash-preview-image-generation"
+        },
+        "prompt": "=Create a luxurious 9:16 banner with ALL text and logos centered and surrounded by at least 15% empty margin from each edge. Do NOT put any text or logo near the edges or corners; use a safe zone in the middle.\n\n {{ $('Code1').item.json.idea }}",
+        "options": {
+          "binaryPropertyOutput": "data"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        0
+      ],
+      "id": "677a4f61-4b07-4413-b0e7-58cf42a6ca0a",
+      "name": "Generate an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5A0mdluJGCEyufEi",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://royalshahnaz.com/wp-content/uploads/2025/01/Royal-Shahnaz-1-e1736441818291.png",
+        "sendQuery": true,
+        "specifyQuery": "=",
+        "queryParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"Idea\": \"{{ $node['Google Sheets1'].json['Idea'] }}\",\n  \"PostDetails\": \"{{ $node['Google Sheets1'].json['PostDetails'] }}\"\n}\n",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data2"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1680,
+        0
+      ],
+      "id": "84a1ee82-836f-4a4a-a27e-243b122657eb",
+      "name": "HTTP Request1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "OpenAI1": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets2": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        []
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate an image": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dc9ccdf6-cb6c-4159-b479-efb926f8dc76",
+  "meta": {
+    "instanceId": "6ae6435382c4da0f9a88fd7eff013c6028337c2272750b4c951c6df4243367ad"
+  },
+  "id": "eN7nvqWtoxe1147F",
+  "tags": []
+}

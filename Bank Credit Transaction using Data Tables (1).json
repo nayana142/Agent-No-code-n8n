@@ -1,0 +1,351 @@
+{
+  "name": "Bank Credit Transaction using Data Tables",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "includeSpamTrash": true
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "66e6b0b1-0635-4805-9b33-d174e5323b90",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gBEOIrCiDMqZDXtf",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9dd2799b-5fd8-4266-a639-8e034dc367bf",
+              "leftValue": "={{ $json.Subject.toLowerCase()}}",
+              "rightValue": "credit",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "622d59e5-d206-4e1d-928a-ff3e217c9049",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "20da6889-6fb0-4f7e-a4ae-5223b574df5f",
+              "name": "snippet",
+              "value": "={{ $json.snippet }}",
+              "type": "string"
+            },
+            {
+              "id": "8353cb31-e663-40bb-b946-5f1056e956ad",
+              "name": "Date",
+              "value": "={{ $now.format('dd-MM-yyyy hh:mm:ss') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "42157946-e534-49e7-a42e-2d7aa372094b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.snippet }} {{ $json.Date }}",
+        "options": {
+          "systemMessage": "# Overview  \nYou are an AI assistant that processes Gmail snippets to extract structured financial details from credited transaction emails and store them in Google Sheets.  \n\n## Context  \n- Emails arrive via **Gmail Trigger**.  \n- A **Filter Node** ensures only credited messages are processed.  \n- From the **Edit Fields Node**, you only receive:  \n  - `snippet` (short text body of the email)  \n  - `time` (when the email was triggered)  \n- The **Google Gemini Chat Model** is used to analyze and extract information.  \n- **Simple Memory** is available for temporary context recall (last processed email only).  \n- Final structured data is stored by appending rows into **Google Sheets**.  \n\n## Instructions  \n1. Receive input containing `snippet` and `time`.  \n2. Analyze the `snippet` to extract:  \n   - **Date** → confirm or normalize the provided trigger time or any date mentioned in the snippet.  \n   - **Name** → person, merchant, or organization name related to the credited transaction.  \n   - **Amount** → any monetary value (₹, $, €, etc.).  \n3. If a field is missing, return it as `null`.  \n4. Always return the extracted details in **structured JSON format**:  \n\n```json\n{\n  \"date\": \"<value or null>\",\n  \"name\": \"<value or null>\",\n  \"amount\": \"<value or null>\"\n}\n```  \n\n5. Pass the structured output to Google Sheets, appending as a new row with columns:  \n   - **Date | Name | Amount**  \n\n## Tools  \n- **Mail Trigger (Gmail)** → Captures incoming emails.  \n- **Filter** → Keeps only “credited” messages.  \n- **Edit Fields** → Passes snippet and time.  \n- **Google Gemini Chat Model** → Extracts date, name, and amount.  \n- **Simple Memory** → Stores temporary last email context if needed.  \n- **Data Tables tool (Insert Row)** → Stores structured records.  \n\n## SOP (Standard Operating Procedure)  \n1. Gmail Trigger activates on a new email.  \n2. Filter allows only credited transaction messages.  \n3. Edit Fields passes only `snippet` + `time`.  \n4. Gemini extracts required data (date, name, amount).  \n5. Output structured JSON.  \n6. Append extracted fields to Google Sheets in the correct column order.  \n\n## Final Notes  \n- **Do not hallucinate** values — only extract what explicitly exists in the snippet.  \n- Always output JSON before appending to Google Sheets.  \n- Use memory only for short-term context, not for permanent storage.  \n- Maintain a consistent, professional, and structured output.  \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "11a3563d-d709-4f9d-8d41-dc7def6bc393",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        528,
+        224
+      ],
+      "id": "af4bb11b-b4b7-41a2-9196-531fddb23d5f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5A0mdluJGCEyufEi",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Gmail Trigger').item.json.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        704,
+        224
+      ],
+      "id": "a5eff1f1-8a45-40cc-a0b7-507c2065e75f",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1WD11Ct9UbA0LcmVwMO4462jxHKyI2rVyJJ1w9Jc1uqE",
+          "mode": "list",
+          "cachedResultName": "Transaction Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1WD11Ct9UbA0LcmVwMO4462jxHKyI2rVyJJ1w9Jc1uqE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Transaction data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1WD11Ct9UbA0LcmVwMO4462jxHKyI2rVyJJ1w9Jc1uqE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Date', ``, 'string') }}",
+            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+            "Amount": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Amount', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1152,
+        240
+      ],
+      "id": "e8604113-d316-4588-bdd5-64a7b33cf8c7",
+      "name": "Append row in sheet in Google Sheets"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "k1e4loABbukiT1gX",
+          "mode": "list",
+          "cachedResultName": "Transaction Data",
+          "cachedResultUrl": "/projects/sw65Gph2j9aFEr6o/datatables/k1e4loABbukiT1gX"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Bank_Name",
+              "displayName": "Bank_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1,
+      "position": [
+        912,
+        224
+      ],
+      "id": "c2124a0e-3eec-4547-ba25-e11811314f55",
+      "name": "Insert row in Data table"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row in Data table": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "afe058e5-fbdf-4932-bf6c-91fbf13b26d6",
+  "meta": {
+    "instanceId": "6ae6435382c4da0f9a88fd7eff013c6028337c2272750b4c951c6df4243367ad"
+  },
+  "id": "LTKA7739DGWx30tc",
+  "tags": []
+}

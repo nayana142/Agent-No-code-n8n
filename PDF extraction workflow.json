@@ -1,0 +1,329 @@
+{
+  "name": "PDF extraction workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1IT-E2MYn8qooNxLtgTjmsiGM3s7H2bE8",
+          "mode": "list",
+          "cachedResultName": "Resumes",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1IT-E2MYn8qooNxLtgTjmsiGM3s7H2bE8"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        -192
+      ],
+      "id": "f77c0af1-3c5d-439b-95ed-99d0b64009dc",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "swlDgrgKFAE0T402",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1IT-E2MYn8qooNxLtgTjmsiGM3s7H2bE8",
+            "mode": "list",
+            "cachedResultName": "Resumes",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1IT-E2MYn8qooNxLtgTjmsiGM3s7H2bE8"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -336,
+        -192
+      ],
+      "id": "3a5d34df-67ba-4eb7-b5aa-966f4bd1a3ad",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "swlDgrgKFAE0T402",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -176,
+        -192
+      ],
+      "id": "9fd02fc4-4e41-4aa2-a94b-d4bb9403bea1",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "swlDgrgKFAE0T402",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "document",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "inputType": "binary",
+        "binaryPropertyName": "=data",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -192
+      ],
+      "id": "296c7c14-11db-4024-960d-14b0a94c484e",
+      "name": "Analyze document",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ZwZ5BoOq5BbI5r75",
+          "name": "Google Gemini(PaLM) Api account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get AI response text\nconst rawText = $json.content.parts[0].text;\n\n// Remove markdown symbols (**), newlines, and trim spaces\nlet cleanText = rawText\n  .replace(/\\*\\*/g, '')       // remove bold markers\n  .replace(/\\\\n/g, '\\n')      // decode literal \\n\n  .replace(/\\s+/g, ' ')       // collapse spaces\n  .trim();\n\n// Extract key fields using regex\nconst nameMatch = cleanText.match(/Name[:\\s]*([A-Za-z\\s]+)/i);\nconst emailMatch = cleanText.match(/Email[:\\s]*([\\w\\.-]+@[\\w\\.-]+)/i);\nconst phoneMatch = cleanText.match(/Phone[:\\s]*([+\\d\\-\\s\\(\\)]+)/i);\nconst locationMatch = cleanText.match(/Location[:\\s]*([A-Za-z,\\s]+)/i);\nconst titleMatch = cleanText.match(/Title\\/Role[:\\s]*([A-Za-z\\s|]+)/i);\nconst linkedinMatch = cleanText.match(/LinkedIn[:\\s]*(\\S+)/i);\nconst summaryMatch = cleanText.match(/Summary[:\\s]*(.*?)(?=Experience|$)/i);\n\n// Build clean structured output\nreturn [\n  {\n    json: {\n      Name: nameMatch ? nameMatch[1].trim() : '',\n      Title: titleMatch ? titleMatch[1].trim() : '',\n      Email: emailMatch ? emailMatch[1].trim() : '',\n      Phone: phoneMatch ? phoneMatch[1].trim() : '',\n      LinkedIn: linkedinMatch ? linkedinMatch[1].trim() : '',\n      Location: locationMatch ? locationMatch[1].trim() : '',\n      Summary: summaryMatch ? summaryMatch[1].trim() : '',\n      CleanText: cleanText\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        -192
+      ],
+      "id": "3cb20b87-8b43-410d-9191-ca7aede25d00",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1sVga_Lu7TU4tM3XbwKRz_UJAD4rQoFkxgRYokNdepWA",
+          "mode": "list",
+          "cachedResultName": "Document Analyzer",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sVga_Lu7TU4tM3XbwKRz_UJAD4rQoFkxgRYokNdepWA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sVga_Lu7TU4tM3XbwKRz_UJAD4rQoFkxgRYokNdepWA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.Name }}",
+            "Title": "={{ $json.Title }}",
+            "Email": "={{ $json.Email }}",
+            "Phone": "={{ $json.Phone }}",
+            "LinkedIn": "={{ $json.LinkedIn }}",
+            "Location": "={{ $json.Location }}",
+            "Summary": "={{ $json.Summary }}",
+            "CleanText": "={{ $json.CleanText }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CleanText",
+              "displayName": "CleanText",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        336,
+        -192
+      ],
+      "id": "17f0cf74-7e52-4d43-96a5-dbc2c737c138",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PNLRseFYSRiFw1MW",
+          "name": "Google Sheets account 19"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Analyze document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze document": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3272a776-4d73-4c5b-a483-39b930ee7d70",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ae6435382c4da0f9a88fd7eff013c6028337c2272750b4c951c6df4243367ad"
+  },
+  "id": "amACX4hwGueOq5PO",
+  "tags": []
+}
