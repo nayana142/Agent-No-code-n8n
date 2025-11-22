@@ -1,0 +1,711 @@
+{
+  "name": "WhatsApp Voice",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        288
+      ],
+      "id": "72f76d0a-d33e-4b00-8ebc-f7ff2f80dbec",
+      "name": "WhatsApp Trigger",
+      "webhookId": "4d3032d2-2e12-4eec-9ded-c34b21f2fd79",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "ouWkJ31LUhmd2D1k",
+          "name": "WhatsApp OAuth account 14"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "775208492334837",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        320
+      ],
+      "id": "569e67df-4328-46fb-bbaa-293cd7d1eedf",
+      "name": "Send message",
+      "webhookId": "91b76b6b-e039-4af6-be46-69d38cdd497e",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "ttQcF8QxgmpDhHeO",
+          "name": "WhatsApp account 12"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "12332322232",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        624,
+        624
+      ],
+      "id": "5f9e8a8b-b1eb-4a1b-a754-bd536b4805c7",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "operation": "mediaUrlGet",
+        "mediaGetId": "={{ $('WhatsApp Trigger').item.json.messages[0].audio.id }}"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f059e57c-6c8c-4049-be11-d22ba6d34abd",
+      "name": "Download media",
+      "webhookId": "3656930e-6bdf-4ac5-972f-c021b7312499",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "ttQcF8QxgmpDhHeO",
+          "name": "WhatsApp account 12"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        416,
+        0
+      ],
+      "id": "ad8a5bb2-0238-4f8c-be96-a384ba0b7a27",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "9X1HShmnGup013yj",
+          "name": "OpenAi account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Is Voice'] }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "80007989-42e1-4ab3-8b67-0b1b319ac4be"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Is Voice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2cfc28fb-212e-48d9-a325-92e1eeede5b3",
+                    "leftValue": "={{ $json['Is Voice'] }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Is Text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        272,
+        288
+      ],
+      "id": "08b2c062-7c29-4ae0-8617-04055ac4678b",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Is Voice?').item.json['Is Voice'] }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "0bf1c27b-9050-4cb7-bf3f-18270aff6fb1"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Is Voice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3140af75-a3ff-43e0-9139-b3d3e08c360e",
+                    "leftValue": "={{ $('Is Voice?').item.json['Is Voice'] }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Is Text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1072,
+        304
+      ],
+      "id": "6ef6bc2e-a4f4-46d6-a9e1-ccba3c123533",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "input": "={{ $json.output }}",
+        "options": {
+          "response_format": "opus"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1072,
+        0
+      ],
+      "id": "54676c6f-e2be-4af2-94f0-e598521c260f",
+      "name": "Generate audio",
+      "credentials": {
+        "openAiApi": {
+          "id": "9X1HShmnGup013yj",
+          "name": "OpenAi account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "118668407821074",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "messageType": "audio",
+        "mediaPath": "useMedian8n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        16
+      ],
+      "id": "bf2d88c6-90ab-4e5b-b816-a2911f9f8ee4",
+      "name": "Send message2",
+      "webhookId": "91b76b6b-e039-4af6-be46-69d38cdd497e",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "ttQcF8QxgmpDhHeO",
+          "name": "WhatsApp account 12"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "822d5987-fe79-4ad3-baac-55b8d773e96c",
+      "name": "Download Audio File",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "ttQcF8QxgmpDhHeO",
+          "name": "WhatsApp account 12"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e56544fa-61e4-4c78-be28-1aef85059cfe",
+              "name": "Is Voice",
+              "value": "={{!! $json.messages[0].audio }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        288
+      ],
+      "id": "3dfc562b-3ad9-40c6-824e-5c0352c5cfd3",
+      "name": "Is Voice?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "45e9fb52-9931-4326-8c2e-d3ab26897164",
+              "name": "input",
+              "value": "={{ $json.text }}{{ $('WhatsApp Trigger').item.json.messages[0].text.body }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        304
+      ],
+      "id": "406fa118-97b8-4084-8988-a8585852bb63",
+      "name": "Agent Input"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Assumes the incoming binary is on property \"data\"\n// e.g. your previous node produced items like: { binary: { data: { data: <base64>, fileName: 'x.opus', mimeType: 'audio/ogg' } } }\n\nconst item = $input.first();\nconst bin = item.binary?.data;\nif (!bin) {\n  throw new Error('No binary found on property \"data\".');\n}\n\n// Keep the raw bytes as-is; just fix the name + mime\nconst originalName = bin.fileName || 'voice';\nconst newName = originalName.toLowerCase().endsWith('.ogg')\n  ? originalName\n  : (originalName.replace(/\\.(opus|mp3|wav)$/i, '') + '.ogg');\n\nreturn [{\n  json: {}, // you can pass through item.json if you want\n  binary: {\n    data: {\n      // IMPORTANT: keep the actual file bytes (base64) untouched\n      data: bin.data, \n      fileName: newName,\n      mimeType: 'audio/ogg; codecs=opus'\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        0
+      ],
+      "id": "c920f7a5-3fe7-4b60-aaec-156fa0cd1d45",
+      "name": "Convert Format"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        560
+      ],
+      "id": "a6248990-4ffe-4101-a42b-8d63346295d6",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "9X1HShmnGup013yj",
+          "name": "OpenAi account 4"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        704,
+        640
+      ],
+      "id": "621b3929-ab74-44c8-8d20-dc1338ff4034",
+      "name": "Answer questions with a vector store"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "nestonew",
+          "mode": "list",
+          "cachedResultName": "nestonew"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        768,
+        768
+      ],
+      "id": "dba957be-a632-4812-9ea2-8be8990719a7",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "wkRYmwSL8MLyjj9B",
+          "name": "PineconeApi account 12"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        880
+      ],
+      "id": "d77c6e7e-6dd3-4636-b9af-a6f529645e58",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "9X1HShmnGup013yj",
+          "name": "OpenAi account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1136,
+        816
+      ],
+      "id": "d2a438e9-8e30-475b-825f-ab47f4c5b03a",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "9X1HShmnGup013yj",
+          "name": "OpenAi account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.input }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "\nYou are the Nesto Training Document Intelligence Agent, developed under the guidance of G. S. Sreekiran.\nYou receive user queries through WhatsApp, either as text or as transcribed voice messages.\nYour responsibility is to answer strictly based on the context retrieved from the vector database.\nYour Role\nYou support CEOs, HR teams, and management professionals by giving clear, accurate answers about:\n•\tNesto Training program\n•\tFramework\n•\tProcesses\n•\tImplementation guidelines\n•\tOperational or policy-level clarifications\nCore Rules\n1.\tUse ONLY the retrieved vector-store context.\n2.\tNever add external knowledge, guesses, or assumptions.\n3.\tNever claim you cannot read files or PDFs — the required information is already embedded.\n4.\tEvery answer must be fully grounded in retrieved context only.\nResponse Style\n•\tKeep responses concise, factual, and suitable for senior leadership.\n•\tWhen helpful, use bullet points or short structured sections.\n•\tMaintain a professional and neutral tone.\n•\tPrioritize strategic and policy-level insights; follow with procedural detail when needed.\n•\tIf the transcription contains filler words (from voice queries), ignore them and focus on meaning.\nIf No Context Matches\nRespond exactly with:\n“I couldn’t find any relevant information related to that query in the Nesto Training documentation.”\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        688,
+        304
+      ],
+      "id": "7eccdd48-648f-4d72-8e40-b4cb59303210",
+      "name": "AI Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Is Voice?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download media": {
+      "main": [
+        [
+          {
+            "node": "Download Audio File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Agent Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Download media",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agent Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Generate audio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate audio": {
+      "main": [
+        [
+          {
+            "node": "Convert Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Audio File": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Voice?": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent Input": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Format": {
+      "main": [
+        [
+          {
+            "node": "Send message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4c2d35a3-d78d-4569-a388-37b023bcfdbe",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ae6435382c4da0f9a88fd7eff013c6028337c2272750b4c951c6df4243367ad"
+  },
+  "id": "JtM6ALruDMayWTTy",
+  "tags": []
+}
